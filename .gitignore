@@ -1,3 +1,8 @@
+.idea/
+.DS_Store
+ChatExport_2025-01-11 (1)
+result.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
