@@ -1,5 +1,6 @@
 import pymorphy3
 from datetime import datetime
+import re
 
 
 def analyze_words(messages, chatter_name, threshold=0.75):
@@ -8,7 +9,7 @@ def analyze_words(messages, chatter_name, threshold=0.75):
     for message in messages:
         if message['text_entities']:
             for word in message['text_entities'][0]['text'].split():
-                word = word.lower()
+                word = re.sub(r'[^\w\s]', '', word.lower())
                 # if score >= threshold and len(word)>4:
                 if len(word) > 4:
                     index = 1 if message['from'] == chatter_name else 0
