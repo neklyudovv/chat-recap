@@ -10,13 +10,13 @@ def main():
 
     messages = data['messages']
     chatter_name = data['name']
-    your_name = next((message['from'] for message in data['messages'] if message['from'] != chatter_name), chatter_name)
+    your_name = next((message['from'] for message in messages if message['from'] != chatter_name), chatter_name)
     word_stats = analyze_words(messages, chatter_name)
     your_messages_count, chatter_messages_count = count_messages(messages, chatter_name)
     average_times = calculate_avg_response_time(messages, chatter_name)
 
     print('chatter:', chatter_name)
-    print('total messages count:', len(data['messages']))
+    print('total messages count:', len(messages))
     print('most used words:')
 
     for i in range(0, 2):
