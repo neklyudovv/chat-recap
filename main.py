@@ -1,5 +1,6 @@
 import json
 from engine import analyze_words, count_messages, calculate_avg_response_time
+from utils import pr_word_stats
 # from visual import render_recap
 
 
@@ -11,24 +12,21 @@ def main():
     messages = data['messages']
     chatter_name = data['name']
     your_name = next((message['from'] for message in messages if message['from'] != chatter_name), chatter_name)
-    word_stats = analyze_words(messages, chatter_name)
-    your_messages_count, chatter_messages_count = count_messages(messages, chatter_name)
-    average_times = calculate_avg_response_time(messages, chatter_name)
+    your_word_stats = analyze_words(messages, your_name)
+    chatter_word_stats = analyze_words(messages, chatter_name)
+    chatter_messages_count = count_messages(messages, chatter_name)
+    your_messages_count = len(messages)-chatter_messages_count
+    your_average_time = calculate_avg_response_time(messages, your_name)
+    chatter_average_time = calculate_avg_response_time(messages, chatter_name)
 
     print('chatter:', chatter_name)
     print('total messages count:', len(messages))
-    print('most used words:')
-
-    for i in range(0, 2):
-        print(your_name+':' if i == 0 else chatter_name+':')
-        for j, word in enumerate(word_stats[i]):
-            if j<10:
-                print(word, word_stats[i][word])
-
+    print(f'most used words:\n{your_name}: {pr_word_stats(your_word_stats)}'
+          f'{chatter_name} {pr_word_stats(chatter_word_stats)}')
     print(f'messages sent:\n{your_name}: {your_messages_count}'
           f' {chatter_name}: {chatter_messages_count}')
-    print(f'avg response times (s):\n{your_name}: {average_times[0]}'
-          f' {chatter_name}: {average_times[1]}')
+    print(f'avg response times (s):\n{your_name}: {your_average_time}'
+          f' {chatter_name}: {chatter_average_time}')
 
     # render_recap(your_name, chatter_name, your_messages_count,
                  # chatter_messages_count, average_times[0], average_times[1],  word_stats)
