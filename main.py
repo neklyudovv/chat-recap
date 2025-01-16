@@ -1,7 +1,7 @@
 import json
 from engine import analyze_words, count_messages, calculate_avg_response_time
 from utils import pr_word_stats
-# from visual import render_recap
+from visual import render_recap
 
 
 def main():
@@ -28,8 +28,9 @@ def main():
     print(f'avg response times (s):\n{your_name}: {your_average_time}'
           f' {chatter_name}: {chatter_average_time}')
 
-    # render_recap(your_name, chatter_name, your_messages_count,
-                 # chatter_messages_count, average_times[0], average_times[1],  word_stats)
+    render_recap(your_name, chatter_name, your_messages_count,
+                 chatter_messages_count, your_average_time, chatter_average_time,
+                 your_word_stats, chatter_word_stats)
 
 
 if __name__ == "__main__":
