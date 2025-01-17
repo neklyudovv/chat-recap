@@ -1,6 +1,6 @@
 import json
-from engine import analyze_words, count_messages, calculate_avg_response_time
-from utils import pr_word_stats
+from engine import analyze_words, count_messages, calculate_avg_response_time, analyze_emojis
+from utils import format_word_stats
 from visual import render_recap
 
 
@@ -21,8 +21,8 @@ def main():
 
     print('chatter:', chatter_name)
     print('total messages count:', len(messages))
-    print(f'most used words:\n{your_name}: {pr_word_stats(your_word_stats)}'
-          f'{chatter_name} {pr_word_stats(chatter_word_stats)}')
+    print(f'most used words:\n{your_name}: {format_word_stats(your_word_stats)}'
+          f'{chatter_name} {format_word_stats(chatter_word_stats)}')
     print(f'messages sent:\n{your_name}: {your_messages_count}'
           f' {chatter_name}: {chatter_messages_count}')
     print(f'avg response times (s):\n{your_name}: {your_average_time}'
@@ -31,6 +31,8 @@ def main():
     render_recap(your_name, chatter_name, your_messages_count,
                  chatter_messages_count, your_average_time, chatter_average_time,
                  your_word_stats, chatter_word_stats)
+    print(format_word_stats(analyze_emojis(messages, your_name)))
+    print(format_word_stats(analyze_emojis(messages, chatter_name)))
 
 
 if __name__ == "__main__":

@@ -1,5 +1,6 @@
 import pymorphy3
 from datetime import datetime
+from emoji import is_emoji
 import re
 
 
@@ -22,6 +23,22 @@ def analyze_words(messages, chatter_name, threshold=0.75):
     return dict(sorted(used_words.items(), key=lambda item: item[1], reverse=True))
     # return used_words
     # return dict(sorted(used_words.items(), key=lambda item: item[1], reverse=True))
+
+
+def analyze_emojis(messages, chatter_name):
+    used_emojis = {}
+    for message in messages:
+        if message['text_entities']:
+            if message['from'] == chatter_name:
+                text = message['text_entities'][0]['text']
+                for char in text:
+                    if is_emoji(char):
+                        if char in used_emojis:
+                            used_emojis[char] += 1
+                        else:
+                            used_emojis[char] = 1
+    return dict(sorted(used_emojis.items(), key=lambda item: item[1], reverse=True))
+
 
 
 def count_messages(messages, chatter_name):
