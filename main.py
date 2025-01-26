@@ -1,5 +1,5 @@
 import json
-from engine import analyze_words, count_messages, calculate_avg_response_time, analyze_emojis
+from engine import analyze_words, count_messages, calculate_avg_response_time, analyze_emojis, get_your_name
 from utils import format_word_stats
 from visual import render_recap
 
@@ -11,7 +11,7 @@ def main():
 
     messages = data['messages']
     chatter_name = data['name']
-    your_name = next((message['from'] for message in messages if message['text_entities'] if message['from'] != chatter_name), chatter_name)
+    your_name = get_your_name(messages, chatter_name)
     your_word_stats = analyze_words(messages, your_name)
     chatter_word_stats = analyze_words(messages, chatter_name)
     chatter_messages_count = count_messages(messages, chatter_name)

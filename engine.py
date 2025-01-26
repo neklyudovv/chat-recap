@@ -4,6 +4,11 @@ from emoji import is_emoji
 import re
 
 
+def get_your_name(messages, chatter_name):
+    return next((message['from'] for message in messages if message['text_entities'] if message['from'] != chatter_name),
+         chatter_name)
+
+
 def analyze_words(messages, chatter_name, threshold=0.75):
     morph = pymorphy3.MorphAnalyzer(lang='ru')
     used_words = {}
@@ -40,7 +45,6 @@ def analyze_emojis(messages, chatter_name):
     return dict(sorted(used_emojis.items(), key=lambda item: item[1], reverse=True))
 
 
-
 def count_messages(messages, chatter_name):
     chatter_messages_count = 0
     for message in messages:
@@ -52,7 +56,7 @@ def count_messages(messages, chatter_name):
 
 def calculate_avg_response_time(messages, chatter_name):
     response_time = []
-    previous_message = messages[0]
+    previous_message = messages[0]  # TODO: проверка есть ли там text_entities
 
     for message in messages[1:]:
         if message['text_entities']:
