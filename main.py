@@ -31,8 +31,8 @@ def main():
     render_recap(your_name, chatter_name, your_messages_count,
                  chatter_messages_count, your_average_time, chatter_average_time,
                  your_word_stats, chatter_word_stats)
-    print(format_word_stats(analyze_emojis(messages, your_name)))
-    print(format_word_stats(analyze_emojis(messages, chatter_name)))
+    print(f'most used emojis:\n{your_name}: {format_word_stats(analyze_emojis(messages, your_name))}'
+          f'{chatter_name}: {format_word_stats(analyze_emojis(messages, chatter_name))}')
 
 
 if __name__ == "__main__":
