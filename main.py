@@ -1,38 +1,35 @@
-import json
-from engine import analyze_words, count_messages, calculate_avg_response_time, analyze_emojis, get_your_name
+from data_loader import load_chat_data
+from engine import ChatAnalyzer
 from utils import format_word_stats
 from visual import render_recap
 
 
 def main():
-    f = open("result.json", 'r')
-    data = json.load(f)
-    f.close()
+    data = load_chat_data("result.json")
 
-    messages = data['messages']
-    chatter_name = data['name']
-    your_name = get_your_name(messages, chatter_name)
-    your_word_stats = analyze_words(messages, your_name)
-    chatter_word_stats = analyze_words(messages, chatter_name)
-    chatter_messages_count = count_messages(messages, chatter_name)
-    your_messages_count = len(messages)-chatter_messages_count
-    your_average_time = calculate_avg_response_time(messages, your_name)
-    chatter_average_time = calculate_avg_response_time(messages, chatter_name)
+    analyzer = ChatAnalyzer(data)
+    analyzer.initialize()
+    results = analyzer.analyze()
+    # print(results)  # по сути results это уже готовый ответ, по которому можно рисовать картинку
+    # / отдавать на сайт в качестве ответа
 
-    print('chatter:', chatter_name)
-    print('total messages count:', len(messages))
-    print(f'most used words:\n{your_name}: {format_word_stats(your_word_stats)}'
-          f'{chatter_name} {format_word_stats(chatter_word_stats)}')
-    print(f'messages sent:\n{your_name}: {your_messages_count}'
-          f' {chatter_name}: {chatter_messages_count}')
-    print(f'avg response times (s):\n{your_name}: {your_average_time}'
-          f' {chatter_name}: {chatter_average_time}')
+    print('chatter:', analyzer.chatter_name)
+    print('total messages:', len(analyzer.messages))
+    print(f'most used words:\n{analyzer.your_name}: {results["your_word_stats"][:10]}\n'
+          f'{analyzer.chatter_name}: {results["chatter_word_stats"][:10]}')
+    print(f'messages sent:\n{analyzer.your_name}: {results["your_messages_count"]}\n'
+          f'{analyzer.chatter_name}: {results["chatter_messages_count"]}')
+    print(f'avg response times (s):\n{analyzer.your_name}: {results["your_average_time"]}\n'
+          f'{analyzer.chatter_name}: {results["chatter_average_time"]}')
+    print(f'most used emojis:\n{analyzer.your_name}: {results["your_emojis"][:10]}\n'
+          f'{analyzer.chatter_name}: {results["chatter_emojis"][:10]}')
 
-    render_recap(your_name, chatter_name, your_messages_count,
-                 chatter_messages_count, your_average_time, chatter_average_time,
-                 your_word_stats, chatter_word_stats)
-    print(f'most used emojis:\n{your_name}: {format_word_stats(analyze_emojis(messages, your_name))}'
-          f'{chatter_name}: {format_word_stats(analyze_emojis(messages, chatter_name))}')
+    # с генерацией картинки надо придумать что-то явно получше
+    # а пока просто повисит закомменченная, я тут архитектуру перестраиваю
+    #render_recap(analyzer.your_name, analyzer.chatter_name, results['your_messages_count'],
+    #             results['chatter_messages_count'], results['your_average_time'],
+    #             results['chatter_average_time'], results['your_word_stats'],
+    #             results['chatter_word_stats'])
 
 
 if __name__ == "__main__":
