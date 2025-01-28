@@ -8,11 +8,8 @@ class ChatAnalyzer:
     def __init__(self, data):
         self.messages = data['messages']
         self.chatter_name = data['name']
-        self.your_name = None
-        self.results = {}
-
-    def initialize(self):
         self.your_name = self.get_your_name()
+        self.results = {}
 
     def get_your_name(self):
         return next((message['from'] for message in self.messages if message['text_entities']
@@ -24,15 +21,16 @@ class ChatAnalyzer:
         for message in self.messages:
             if message['text_entities']:
                 if message['from'] == chatter_name:
-                    for word in message['text_entities'][0]['text'].split():
-                        word = re.sub(r'[^\w\s]', '', word.lower())
-                        if len(word) > 4:
-                            if word in used_words:
-                                used_words[word] += 1
-                            else:
-                                p = morph.parse(word)
-                                if p[0].score >= threshold:
-                                    used_words[word] = 1
+                    for i in range(0, len(message['text_entities'])):
+                        for word in message['text_entities'][i]['text'].split():
+                            word = re.sub(r'[^\w\s]', '', word.lower())
+                            if len(word) > 4:
+                                if word in used_words:
+                                    used_words[word] += 1
+                                else:
+                                    p = morph.parse(word)
+                                    if p[0].score >= threshold:
+                                        used_words[word] = 1
 
         return sorted(used_words.items(), key=lambda item: item[1], reverse=True)
 
@@ -55,10 +53,16 @@ class ChatAnalyzer:
 
     def calculate_avg_response_time(self, chatter_name):
         response_time = []
-        previous_message = self.messages[0]  # TODO: проверка есть ли там text_entities
+        previous_message = None
+        for message in self.messages:
+            if "from" in message:
+                previous_message = message
+                break
+        if previous_message is None:
+            return -1
 
-        for message in self.messages[1:]:
-            if message['text_entities']:
+        for message in self.messages:
+            if "from" in message:
                 if message['from'] != previous_message['from']:
                     if message['from'] == chatter_name:
                         last_time = datetime.fromisoformat(previous_message['date'])
