@@ -1,4 +1,3 @@
-import pymorphy3
 from datetime import datetime
 from emoji import is_emoji
 import re
@@ -9,28 +8,24 @@ class ChatAnalyzer:
         self.messages = data['messages']
         self.chatter_name = data['name']
         self.your_name = self.get_your_name()
-        self.results = {}
 
     def get_your_name(self):
         return next((message['from'] for message in self.messages if message['text_entities']
                      and message['from'] != self.chatter_name), self.chatter_name)
 
-    def analyze_words(self, chatter_name, threshold=0.75):
-        morph = pymorphy3.MorphAnalyzer(lang='ru')
+    def analyze_words(self, chatter_name):
         used_words = {}
         for message in self.messages:
             if message['text_entities']:
                 if message['from'] == chatter_name:
-                    for i in range(0, len(message['text_entities'])):
-                        for word in message['text_entities'][i]['text'].split():
-                            word = re.sub(r'[^\w\s]', '', word.lower())
-                            if len(word) > 4:
-                                if word in used_words:
-                                    used_words[word] += 1
-                                else:
-                                    p = morph.parse(word)
-                                    if p[0].score >= threshold:
-                                        used_words[word] = 1
+                    text = message['text_entities'][0]['text'].lower()
+                    for word in text.split():
+                        word = re.sub(r'[^\w\s]', '', word)
+                        if len(word) > 4:
+                            if word in used_words:
+                                used_words[word] += 1
+                            else:
+                                used_words[word] = 1
 
         return sorted(used_words.items(), key=lambda item: item[1], reverse=True)
 
@@ -74,8 +69,8 @@ class ChatAnalyzer:
 
         return round(sum(response_time) / len(response_time), 2) if response_time else 0
 
-    def analyze(self):
-        self.results = {
+    def get_stats(self):
+        results = {
             'your_word_stats': self.analyze_words(self.your_name),
             'chatter_word_stats': self.analyze_words(self.chatter_name),
             'your_messages_count': self.count_messages(self.your_name),
@@ -85,4 +80,4 @@ class ChatAnalyzer:
             'your_emojis': self.analyze_emojis(self.your_name),
             'chatter_emojis': self.analyze_emojis(self.chatter_name)
         }
-        return self.results
+        return results

@@ -1,15 +1,12 @@
 from data_loader import load_chat_data
 from engine import ChatAnalyzer
-from utils import format_word_stats
-from visual import render_recap
 
 
 def main():
     data = load_chat_data("result.json")
 
     analyzer = ChatAnalyzer(data)
-    analyzer.initialize()
-    results = analyzer.analyze()
+    results = analyzer.get_stats()
     # print(results)  # по сути results это уже готовый ответ, по которому можно рисовать картинку
     # / отдавать на сайт в качестве ответа
 
