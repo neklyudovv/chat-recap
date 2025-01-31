@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from emoji import is_emoji
 import re
 
@@ -16,31 +16,21 @@ class ChatAnalyzer:
     def analyze_words(self, chatter_name):
         used_words = {}
         for message in self.messages:
-            if message['text_entities']:
-                if message['from'] == chatter_name:
-                    text = message['text_entities'][0]['text'].lower()
-                    for word in text.split():
-                        word = re.sub(r'[^\w\s]', '', word)
-                        if len(word) > 4:
-                            if word in used_words:
-                                used_words[word] += 1
-                            else:
-                                used_words[word] = 1
+            if message['text_entities'] and message['from'] == chatter_name:
+                text = message['text_entities'][0]['text'].lower()
+                for word in re.findall(r'\b\w{5,}\b', text):
+                    used_words[word] = used_words.get(word, 0) + 1
 
         return sorted(used_words.items(), key=lambda item: item[1], reverse=True)
 
     def analyze_emojis(self, chatter_name):
         used_emojis = {}
         for message in self.messages:
-            if message['text_entities']:
-                if message['from'] == chatter_name:
-                    text = message['text_entities'][0]['text']
-                    for char in text:
-                        if is_emoji(char):
-                            if char in used_emojis:
-                                used_emojis[char] += 1
-                            else:
-                                used_emojis[char] = 1
+            if message['text_entities'] and message['from'] == chatter_name:
+                for char in message['text_entities'][0]['text']:
+                    if is_emoji(char):
+                        used_emojis[char] = used_emojis.get(char, 0) + 1
+
         return sorted(used_emojis.items(), key=lambda item: item[1], reverse=True)
 
     def count_messages(self, chatter_name):
@@ -69,6 +59,28 @@ class ChatAnalyzer:
 
         return round(sum(response_time) / len(response_time), 2) if response_time else 0
 
+    def most_active_period(self, days):
+        activity = {}
+
+        for message in self.messages:
+            date = datetime.fromisoformat(message['date']).date()
+            period_start = date - timedelta(days=date.day % days)
+
+            activity[period_start] = activity.get(period_start, 0) + 1
+
+        sorted_activity = sorted(activity.items(), key=lambda x: x[1], reverse=True)
+
+        if sorted_activity:
+            most_active_period_start = sorted_activity[0][0]
+            most_active_period_end = most_active_period_start + timedelta(days=days - 1)
+            message_count = sorted_activity[0][1]
+            return {
+                'start': most_active_period_start,
+                'end': most_active_period_end,
+                'messages_count': message_count
+            }
+        return None
+
     def get_stats(self):
         results = {
             'your_word_stats': self.analyze_words(self.your_name),
@@ -78,6 +90,7 @@ class ChatAnalyzer:
             'your_average_time': self.calculate_avg_response_time(self.your_name),
             'chatter_average_time': self.calculate_avg_response_time(self.chatter_name),
             'your_emojis': self.analyze_emojis(self.your_name),
-            'chatter_emojis': self.analyze_emojis(self.chatter_name)
+            'chatter_emojis': self.analyze_emojis(self.chatter_name),
+            'most_active_month': self.most_active_period(30)
         }
         return results

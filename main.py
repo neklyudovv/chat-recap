@@ -20,6 +20,8 @@ def main():
           f'{analyzer.chatter_name}: {results["chatter_average_time"]}')
     print(f'most used emojis:\n{analyzer.your_name}: {results["your_emojis"][:10]}\n'
           f'{analyzer.chatter_name}: {results["chatter_emojis"][:10]}')
+    print(f'most active month: from {results["most_active_month"]["start"]} to '
+          f'{results["most_active_month"]["end"]} with msg count of {results["most_active_month"]["messages_count"]}')
 
     # с генерацией картинки надо придумать что-то явно получше
     # а пока просто повисит закомменченная, я тут архитектуру перестраиваю
