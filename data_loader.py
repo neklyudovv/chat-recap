@@ -10,6 +10,6 @@ def load_chat_data(file_path):
         return data
 
     except FileNotFoundError:
-        return ValueError("no such file")
+        raise ValueError("no such file")
     except json.JSONDecodeError:
         raise ValueError("incorrect json")
