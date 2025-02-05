@@ -40,6 +40,7 @@ Chat Recap — инструмент для анализа чатов, котор
 
 ## Пример работы
 Программа выводит результаты анализа в понятном формате:
+```
 chatter: Alice
 total messages: 50
 most used words:
@@ -55,6 +56,7 @@ most used emojis:
 Bob: [('🍕', 2), ('🌟', 1), ('😄', 1)]
 Alice: [('😄', 3), ('🎶', 2)]
 most active month: from 2023-04-30 to 2023-05-29 with msg count of 50
+```
 ---
 
 ## TODO:
