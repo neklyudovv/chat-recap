@@ -1,5 +1,6 @@
 from data_loader import load_chat_data
 from engine import ChatAnalyzer
+from visual import render_recap
 
 
 def main():
@@ -25,10 +26,10 @@ def main():
 
     # с генерацией картинки надо придумать что-то явно получше
     # а пока просто повисит закомменченная, я тут архитектуру перестраиваю
-    #render_recap(analyzer.your_name, analyzer.chatter_name, results['your_messages_count'],
-    #             results['chatter_messages_count'], results['your_average_time'],
-    #             results['chatter_average_time'], results['your_word_stats'],
-    #             results['chatter_word_stats'])
+    render_recap(analyzer.your_name, analyzer.chatter_name, results['your_messages_count'],
+                 results['chatter_messages_count'], results['your_average_time'],
+                 results['chatter_average_time'], results['your_word_stats'],
+                 results['chatter_word_stats'], results['your_emojis'][:10], results['chatter_emojis'][:10])
 
 
 if __name__ == "__main__":
