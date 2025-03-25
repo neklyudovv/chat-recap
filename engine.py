@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 from emoji import is_emoji
 import pandas as pd
 
@@ -39,8 +39,8 @@ class ChatAnalyzer:
         return round(response_times.mean(), 2) if not response_times.empty else 0
 
     def most_active_period(self, days):
-        self.df["date"] = pd.to_datetime(self.df["date"])
-        period_start = self.df["date"].dt.floor(f"{days}D")
+        self.df["date"] = pd.to_datetime(self.df["date"]).dt.date  # убрал время, только дата для правильного подсчета
+        period_start = self.df["date"] - pd.to_timedelta(self.df["date"].apply(lambda d: d.day % days), unit="D")
         activity = period_start.value_counts().sort_values(ascending=False)
 
         if activity.empty:
