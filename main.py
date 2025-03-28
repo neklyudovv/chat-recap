@@ -24,12 +24,10 @@ def main():
     print(f'most active month: from {results["most_active_month"]["start"]} to '
           f'{results["most_active_month"]["end"]} with msg count of {results["most_active_month"]["messages_count"]}')
 
-    # с генерацией картинки надо придумать что-то явно получше
-    # а пока просто повисит закомменченная, я тут архитектуру перестраиваю
-    #render_recap(analyzer.your_name, analyzer.chatter_name, results['your_messages_count'],
-    #             results['chatter_messages_count'], results['your_average_time'],
-    #             results['chatter_average_time'], results['your_word_stats'],
-    #             results['chatter_word_stats'], results['your_emojis'], results['chatter_emojis'])
+    render_recap(analyzer.your_name, analyzer.chatter_name, results['your_messages_count'],
+                 results['chatter_messages_count'], results['your_average_time'],
+                 results['chatter_average_time'], results['your_word_stats'],
+                 results['chatter_word_stats'])
 
 
 if __name__ == "__main__":
