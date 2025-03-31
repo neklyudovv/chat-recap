@@ -4,9 +4,9 @@ from visual import render_recap
 
 
 def main():
-    data, chatter_name = load_chat_data("result.json")
+    data = load_chat_data("result.json")  # pandas data, not json data
 
-    analyzer = ChatAnalyzer(data, chatter_name)
+    analyzer = ChatAnalyzer(data)
     results = analyzer.get_stats()
     # print(results)  # по сути results это уже готовый ответ, по которому можно рисовать картинку
     # / отдавать на сайт в качестве ответа

@@ -15,7 +15,7 @@ def load_chat_data(file_path):
         df["date"] = pd.to_datetime(df["date"], errors="coerce")
         df = df.dropna(subset=["date"])
 
-        return df, data["name"]
+        return df
 
     except FileNotFoundError:
         raise ValueError("no such file")
