@@ -4,14 +4,17 @@ import pandas as pd
 
 
 class ChatAnalyzer:
-    def __init__(self, df, chatter_name):
+    def __init__(self, df):
         self.df = df
-        self.chatter_name = chatter_name
+        self.chatter_name = self.get_chatter_name()
         self.your_name = self.get_your_name()
 
+    def get_chatter_name(self):
+        return self.df["from"].value_counts().idxmax()
+
     def get_your_name(self):
-        return next((name for name in self.df["from"].dropna().unique()
-                     if name != self.chatter_name), self.chatter_name)
+        unique_names = self.df["from"].unique()
+        return next(name for name in unique_names if name != self.chatter_name)
 
     def analyze_words(self, chatter_name):
         text_series = self.df.loc[self.df["from"] == chatter_name, "text"].dropna()
