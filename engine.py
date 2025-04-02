@@ -3,11 +3,29 @@ from emoji import is_emoji
 import pandas as pd
 
 
-class ChatAnalyzer:
+class ChatAnalyzer:  # а еще по хорошему бы сделать чтобы этот класс мог обрабатывать чаты не только для 2х
     def __init__(self, df):
-        self.df = df
+        self.df = df.copy()  # копия, чтобы не портить оригинал
+        self.preprocess()
         self.chatter_name = self.get_chatter_name()
         self.your_name = self.get_your_name()
+
+    def preprocess(self):
+        # print(self.df.keys())
+        if "date" in self.df.columns:
+            self.df["date"] = pd.to_datetime(self.df["date"], errors="coerce")
+            self.df = self.df.dropna(subset=["date"])  # убираем некорректные даты
+
+        if "from" in self.df.columns:
+            self.df["from"] = self.df["from"].astype(str).str.strip()
+
+        if "text" in self.df.columns:
+            self.df["text"] = (
+                self.df["text"]
+                .astype(str)
+                .str.strip()  # лишние пробелы по краям
+                .replace(r"\s+", " ", regex=True)  # лишние пробелы внутри текста
+            )
 
     def get_chatter_name(self):
         return self.df["from"].value_counts().idxmax()
@@ -42,8 +60,8 @@ class ChatAnalyzer:
         return round(response_times.mean(), 2) if not response_times.empty else 0
 
     def most_active_period(self, days):
-        self.df["date"] = pd.to_datetime(self.df["date"]).dt.date  # убрал время, только дата для правильного подсчета
-        period_start = self.df["date"] - pd.to_timedelta(self.df["date"].apply(lambda d: d.day % days), unit="D")
+        curr_date = pd.to_datetime(self.df["date"].dt.date)  # убрал время, только дата для правильного подсчета
+        period_start = curr_date - pd.to_timedelta(curr_date.apply(lambda d: d.day % days), unit="D")
         activity = period_start.value_counts().sort_values(ascending=False)
 
         if activity.empty:
