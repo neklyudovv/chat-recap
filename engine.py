@@ -20,12 +20,8 @@ class ChatAnalyzer:  # а еще по хорошему бы сделать чт�
             self.df["from"] = self.df["from"].astype(str).str.strip()
 
         if "text" in self.df.columns:
-            self.df["text"] = (
-                self.df["text"]
-                .astype(str)
-                .str.strip()  # лишние пробелы по краям
-                .replace(r"\s+", " ", regex=True)  # лишние пробелы внутри текста
-            )
+            self.df = self.df[self.df["text"].apply(lambda x: isinstance(x, str))]  # теперь только строки
+            self.df["text"] = (self.df["text"].str.strip().replace(r"\s+", " ", regex=True))
 
     def get_chatter_name(self):
         return self.df["from"].value_counts().idxmax()
