@@ -1,8 +1,10 @@
 import matplotlib.pyplot as plt
+import warnings
 
 
 def render_recap(your_name, chatter_name, your_messages_count, chatter_messages_count,
                  your_average_time, chatter_average_time, your_word_stats, chatter_word_stats):
+    warnings.filterwarnings("ignore")
     fig, axes = plt.subplots(2, 2, figsize=(10, 12))
 
     # Messages count
