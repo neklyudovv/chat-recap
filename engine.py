@@ -3,12 +3,11 @@ from emoji import is_emoji
 import pandas as pd
 
 
-class ChatAnalyzer:  # а еще по хорошему бы сделать чтобы этот класс мог обрабатывать чаты не только для 2х
+class ChatAnalyzer:
     def __init__(self, df):
         self.df = df.copy()  # копия, чтобы не портить оригинал
         self.preprocess()
-        self.chatter_name = self.get_chatter_name()
-        self.your_name = self.get_your_name()
+        self.chatters = self.get_chatters()
 
     def preprocess(self):
         # print(self.df.keys())
@@ -23,12 +22,10 @@ class ChatAnalyzer:  # а еще по хорошему бы сделать чт�
             self.df = self.df[self.df["text"].apply(lambda x: isinstance(x, str))]  # теперь только строки
             self.df["text"] = (self.df["text"].str.strip().replace(r"\s+", " ", regex=True))
 
-    def get_chatter_name(self):
-        return self.df["from"].value_counts().idxmax()
-
-    def get_your_name(self):
-        unique_names = self.df["from"].unique()
-        return next(name for name in unique_names if name != self.chatter_name)
+    def get_chatters(self):
+        if "from" in self.df.columns:
+            return sorted(self.df["from"].dropna().unique().tolist())
+        return []
 
     def analyze_words(self, chatter_name):
         text_series = self.df.loc[self.df["from"] == chatter_name, "text"].dropna()
@@ -56,7 +53,7 @@ class ChatAnalyzer:  # а еще по хорошему бы сделать чт�
         return round(response_times.mean(), 2) if not response_times.empty else 0
 
     def most_active_period(self, days):
-        curr_date = pd.to_datetime(self.df["date"].dt.date)  # убрал время, только дата для правильного подсчета
+        curr_date = pd.to_datetime(self.df["date"]).dt.date  # убрал время, только дата для правильного подсчета
         period_start = curr_date - pd.to_timedelta(curr_date.apply(lambda d: d.day % days), unit="D")
         activity = period_start.value_counts().sort_values(ascending=False)
 
@@ -71,14 +68,13 @@ class ChatAnalyzer:  # а еще по хорошему бы сделать чт�
         }
 
     def get_stats(self):
-        return {
-            'your_word_stats': self.analyze_words(self.your_name),
-            'chatter_word_stats': self.analyze_words(self.chatter_name),
-            'your_messages_count': self.count_messages(self.your_name),
-            'chatter_messages_count': self.count_messages(self.chatter_name),
-            'your_average_time': self.calculate_avg_response_time(self.your_name),
-            'chatter_average_time': self.calculate_avg_response_time(self.chatter_name),
-            'your_emojis': self.analyze_emojis(self.your_name),
-            'chatter_emojis': self.analyze_emojis(self.chatter_name),
-            'most_active_month': self.most_active_period(30)
-        }
+        result = {}
+        for chatter in self.chatters:
+            result[chatter] = {
+                'name': chatter,
+                'word_stats': self.analyze_words(chatter),
+                'messages_count': self.count_messages(chatter),
+                'avg_time': self.calculate_avg_response_time(chatter),
+                'emojis': self.analyze_emojis(chatter),
+            }
+        return result
