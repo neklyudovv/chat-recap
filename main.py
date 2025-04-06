@@ -8,25 +8,22 @@ def main():
 
     analyzer = ChatAnalyzer(data)
     results = analyzer.get_stats()
-
+    # print(results)  # по сути results это уже готовый ответ, по которому можно рисовать картинку
+    # / отдавать на сайт в качестве ответа
     sections = {
         "most used words": "word_stats",
         "messages sent": "messages_count",
         "avg response time (s)": "avg_time",
         "most used emojis": "emojis",
     }
-    # print(results)  # по сути results это уже готовый ответ, по которому можно рисовать картинку
-    # / отдавать на сайт в качестве ответа
+
     print('total messages:', len(analyzer.df))
     for section, key in sections.items():
         print(section + ":")
         for chatter, data in results.items():
             print(f"{data['name']}: {data[key]}")
 
-    # render_recap(analyzer.your_name, analyzer.chatter_name, results['your_messages_count'],
-    #             results['chatter_messages_count'], results['your_average_time'],
-    #             results['chatter_average_time'], results['your_word_stats'],
-    #             results['chatter_word_stats'])
+    render_recap(results)
 
 
 if __name__ == "__main__":
