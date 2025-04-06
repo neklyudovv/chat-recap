@@ -53,7 +53,7 @@ class ChatAnalyzer:
         return round(response_times.mean(), 2) if not response_times.empty else 0
 
     def most_active_period(self, days):
-        curr_date = pd.to_datetime(self.df["date"]).dt.date  # убрал время, только дата для правильного подсчета
+        curr_date = self.df["date"].dt.date  # убрал время, только дата для правильного подсчета
         period_start = curr_date - pd.to_timedelta(curr_date.apply(lambda d: d.day % days), unit="D")
         activity = period_start.value_counts().sort_values(ascending=False)
 
@@ -67,9 +67,11 @@ class ChatAnalyzer:
             "messages_count": activity.max(),
         }
 
-    def get_stats(self):
+    def get_stats(self, chatter_name=""):
         result = {}
-        for chatter in self.chatters:
+
+        target = [chatter_name] if chatter_name else self.chatters
+        for chatter in target:
             result[chatter] = {
                 'name': chatter,
                 'word_stats': self.analyze_words(chatter),
