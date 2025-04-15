@@ -66,6 +66,15 @@ class ChatAnalyzer:
             "messages_count": activity.max(),
         }
 
+    def most_initiator(self, gap_minutes: int = 30) -> dict[str, int]:
+        df = self.df[["from", "date"]].copy().sort_values("date")
+        df["time_diff"] = df["date"].diff().dt.total_seconds()
+        gap_seconds = gap_minutes * 60
+        df["new_dialog"] = (df["time_diff"] > gap_seconds) | (df["time_diff"].isna())
+
+        initiators = df.loc[df["new_dialog"], "from"]
+        return initiators.value_counts().to_dict()
+
     def get_stats(self, chatter_name: str = "") -> dict[str, dict[str, object]]:
         result = {}
 
