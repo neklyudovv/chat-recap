@@ -1,65 +1,127 @@
 # chat-recap
-Chat Recap — инструмент для анализа чатов, который обрабатывает историю сообщений и предоставляет детальную статистику по переписке.
 
-## Содержание
-- [Возможности](#возможности)
-- [Описание решения](#описание-решения)
-- [Использование](#использование)
-- [Пример работы](#пример-работы)
+**Chat Recap** is a comprehensive tool for analyzing chat history export data (e.g., from Telegram). It parses message history to provide detailed insights and statistics about user interactions.
+
+> Built with **Pandas**, **Matplotlib**, and **Pydantic**.
+
+## Table of Contents
+
+- [Features](#features)
+- [How It Works](#how-it-works)
+- [Project Structure](#project-structure)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Example Output](#example-output)
 - [TODO](#todo)
 
 ---
 
-## Возможности
-- Подсчет количества сообщений каждого собеседника
-- Анализ наиболее часто используемых слов
-- Подсчет количества эмодзи и определение самых популярных
-- Вычисление среднего времени ответа
-- Поиск наиболее активного периода общения
+## Features
+
+- **Message Volume**: Counts total messages for each participant.
+- **Word Analysis**: Identifies the most frequently used words (configurable length).
+- **Emoji Analysis**: Counts and ranks the most popular emojis.
+- **Response Time**: Calculates the average response time for each user.
+- **Active Periods**: Identifies the most active time range (e.g., busiest week).
+- **Initiators**: Tracks who starts new conversations most often.
+- **Visualizations**: Generates dynamic charts (bar charts, word clouds logic) for top active users.
 
 ---
 
-## Описание решения
-Проект обрабатывает JSON-файл с историей сообщений, анализируя тексты на основе регулярных выражений. Он вычисляет статистику по количеству сообщений, среднему времени ответа, самым популярным словам и эмодзи. 
+## How It Works
 
-Используется объектно-ориентированный подход: ChatAnalyzer управляет всей логикой анализа, а входные данные загружаются через data_loader.py. Результаты выводятся в консоль.
+The project reads a JSON file containing chat history. It uses **Pydantic** for robust data validation and cleaning. The analysis logic is decoupled from data loading and visualization, ensuring a modular and maintainable codebase.
+
+1.  **Loader**: Reads JSON, validates structure, and filters for valid messages.
+2.  **Analyzer**: Processes messages to compute statistics (word frequency, time gaps, etc.).
+3.  **Visualizer**: Uses `matplotlib` to render insights into a recap image.
 
 ---
 
-## Использование
-1.  Установка зависимостей
-    
+## Project Structure
+
+```
+.
+- main.py        # Entry point: handles CLI args and orchestrates the flow
+- config.py      # Configuration (paths, colors, thresholds)
+- src/
+    - models.py    # Pydantic models (Message, ChatExport)
+    - loader.py    # Data loading and validation logic
+    - analyzer.py  # Core analysis logic (ChatAnalyzer class)
+    - visual.py    # Visualization logic using matplotlib
+- data/          # Input directory for JSON files (e.g., result.json)
+- output/        # Output directory for generated images
+```
+
+---
+
+## Installation
+
+1.  **Clone the repository** (or download the source code).
+2.  **Install dependencies**:
+    ```bash
     pip install -r requirements.txt
-    
-2. Подготовьте JSON-файл с историей чатов (выгрузить его можно в приложении Telegram на ПК, пример в `result.json`).
-3. Запустите анализ:
-   
-   python main.py
-   
-4. Получите статистику в консоли.
-
-## Пример работы
-Программа выводит результаты анализа в понятном формате:
-```
-chatter: Alice
-total messages: 50
-most used words:
-Bob: [('reply', 17), ('example', 14), ('message', 12), ('about', 1)]
-Alice: [('reply', 18), ('example', 14), ('message', 11)]
-messages sent:
-Bob: 25
-Alice: 25
-avg response times (s):
-Bob: 312.0
-Alice: 300.0
-most used emojis:
-Bob: [('🍕', 2), ('🌟', 1), ('😄', 1)]
-Alice: [('😄', 3), ('🎶', 2)]
-most active month: from 2023-04-30 to 2023-05-29 with msg count of 50
-```
+    ```
 ---
 
-## TODO:
-- [ ] Добавление новых метрик
-- [ ] Визуализация данных с помощью графиков
-- [ ] Генерация красивых итоговых изображений
+## Usage
+
+1.  **Prepare Data**: Export your chat history to JSON (e.g., from Telegram Desktop) and place `result.json` in the `data/` folder.
+2.  **Run the script**:
+    ```bash
+    python main.py
+    ```
+3.  **Custom Arguments**:
+    You can specify input/output paths and the number of top users to display:
+    ```bash
+    python main.py --input data/my_chat.json --output output/my_recap.png --top_n 3
+    ```
+
+---
+
+## Example Output
+
+**Console Output:**
+```
+Loaded 50 valid messages.
+Analyzing data...
+
+--- Metrics ---
+Global:
+  Total Messages: 50
+  Most Active Period: 2023-04-30 to 2023-05-06 (50 msgs)
+
+User Stats:
+  Alice:
+    Messages: 25
+    Avg Response Time: 300.0s
+    New Dialogues: 1
+    Top Words: reply: 18, example: 14, message: 11
+    Top Emojis: 😄: 3, 🎶: 2
+
+  Bob:
+    Messages: 25
+    Avg Response Time: 312.0s
+    New Dialogues: 0
+    Top Words: reply: 17, example: 14, message: 12, about: 1
+    Top Emojis: 🍕: 2, 🌟: 1, 😄: 1
+
+---------------------------
+
+Generating visual for top 2 users...
+Saved visualization to .../output/chat_recap.png
+Done!
+```
+
+**Generated Image (`chat_recap.png`)**:
+- **Messages Count**: Bar chart comparing message volume.
+- **Avg Response Time**: Bar chart comparing speed of replies.
+- **Most Used Words**: Horizontal bar charts for each user's top words.
+
+---
+
+## TODO
+
+- [ ] Add support for more input formats (Discord).
+- [ ] Implement sentiment analysis.
+- [ ] Create a web interface for easier interaction.
