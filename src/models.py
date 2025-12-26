@@ -1,12 +1,9 @@
 from datetime import datetime
-
 from pydantic import BaseModel, Field, field_validator
 
 class TextEntity(BaseModel):
     type: str
     text: str
-
-
 
 class Message(BaseModel):
     id: int
@@ -23,8 +20,6 @@ class Message(BaseModel):
                 return datetime.fromisoformat(v)
             except ValueError:
                 return datetime.strptime(v, "%Y-%m-%dT%H:%M:%S") # adjust format if needed
-
-
 
         return v
     

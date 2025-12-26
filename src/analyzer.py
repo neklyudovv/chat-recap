@@ -1,8 +1,5 @@
 from datetime import timedelta
-
-
 from emoji import is_emoji
-
 import pandas as pd
 from src.models import Message
 from config import MIN_WORD_LENGTH
