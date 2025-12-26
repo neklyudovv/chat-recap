@@ -2,7 +2,7 @@
 chat_recap.png
 .DS_Store
 ChatExport_2025-01-11 (1)
-result.json
+data/result.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
